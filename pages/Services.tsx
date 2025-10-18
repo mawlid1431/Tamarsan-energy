@@ -14,14 +14,54 @@ import {
   Gauge,
   Power,
   Cpu,
+  Wind,
 } from "lucide-react";
+import { useServices } from "../src/hooks/useServices";
 
 interface ServicesProps {
   onNavigate?: (page: string) => void;
 }
 
 export function Services({ onNavigate }: ServicesProps = {}) {
-  const mainServices = [
+  const { services, loading } = useServices();
+
+  // Map icon names to components
+  const getIconComponent = (iconName: string) => {
+    const icons: Record<string, any> = {
+      Sun, Zap, Battery, Lightbulb, Settings, Wrench, Wind, Cpu, Power, Gauge
+    };
+    return icons[iconName] || Sun;
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background pt-20 flex items-center justify-center">
+        <p className="text-gray-600 dark:text-gray-400">Loading services...</p>
+      </div>
+    );
+  }
+
+  if (services.length === 0) {
+    return (
+      <div className="min-h-screen bg-background pt-20">
+        <section className="py-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 className="text-4xl md:text-6xl mb-6">
+              Our <span className="text-primary">Services</span>
+            </h1>
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-8">
+              No services available yet. Add services from the admin panel to display them here.
+            </p>
+            <a href="/admin" className="text-primary hover:underline">
+              Go to Admin Panel →
+            </a>
+          </div>
+        </section>
+      </div>
+    );
+  }
+
+  const oldMainServices = [
     {
       icon: Sun,
       title: "Solar PV Systems",
@@ -211,73 +251,51 @@ export function Services({ onNavigate }: ServicesProps = {}) {
       <section className="py-24 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {mainServices.map((service, index) => (
-              <motion.div
-                key={service.title}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                whileHover={{ y: -5 }}
-                className="group"
-              >
-                <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-8 h-full border border-gray-200 dark:border-gray-700 hover:border-indigo-600 dark:hover:border-indigo-400 transition-all duration-300 hover:shadow-xl">
-                  {/* Icon */}
-                  <motion.div
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                    className="w-16 h-16 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg"
-                  >
-                    <service.icon className="w-8 h-8 text-white" />
-                  </motion.div>
+            {services.map((service, index) => {
+              const ServiceIcon = getIconComponent(service.icon);
+              return (
+                <motion.div
+                  key={service.title}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  whileHover={{ y: -5 }}
+                  className="group"
+                >
+                  <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-8 h-full border border-gray-200 dark:border-gray-700 hover:border-indigo-600 dark:hover:border-indigo-400 transition-all duration-300 hover:shadow-xl">
+                    {/* Icon */}
+                    <motion.div
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      transition={{ type: "spring", stiffness: 300 }}
+                      className="w-16 h-16 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg"
+                    >
+                      <ServiceIcon className="w-8 h-8 text-white" />
+                    </motion.div>
 
-                  {/* Title */}
-                  <h3 className="text-2xl mb-4 text-gray-900 dark:text-white">
-                    {service.title}
-                  </h3>
+                    {/* Title */}
+                    <h3 className="text-2xl mb-4 text-gray-900 dark:text-white">
+                      {service.title}
+                    </h3>
 
-                  {/* Description */}
-                  <p className="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
-                    {service.description}
-                  </p>
+                    {/* Description */}
+                    <p className="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
+                      {service.description}
+                    </p>
 
-                  {/* Features */}
-                  <ul className="space-y-3 mb-6">
-                    {service.features.map((feature) => (
-                      <li
-                        key={feature}
-                        className="flex items-start text-sm text-gray-600 dark:text-gray-400"
-                      >
-                        <CheckCircle2 className="w-5 h-5 text-indigo-600 dark:text-indigo-400 mr-2 flex-shrink-0 mt-0.5" />
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  {/* Stats */}
-                  <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
-                    <div className="flex items-baseline">
-                      <span className="text-3xl text-indigo-600 dark:text-indigo-400">
-                        {service.stats.number}
-                      </span>
-                      <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
-                        {service.stats.label}
-                      </span>
-                    </div>
+                    {/* Hover Arrow */}
+                    <motion.div
+                      initial={{ opacity: 0, x: -10 }}
+                      whileHover={{ opacity: 1, x: 0 }}
+                      className="mt-6 flex items-center text-indigo-600 dark:text-indigo-400"
+                    >
+                      <span className="text-sm">Learn more</span>
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </motion.div>
                   </div>
-
-                  {/* Hover Arrow */}
-                  <motion.div
-                    initial={{ opacity: 0, x: -10 }}
-                    whileHover={{ opacity: 1, x: 0 }}
-                    className="mt-6 flex items-center text-indigo-600 dark:text-indigo-400"
-                  >
-                    <span className="text-sm">Learn more</span>
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </motion.div>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>

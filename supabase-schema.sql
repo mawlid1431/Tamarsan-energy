@@ -82,29 +82,64 @@ CREATE POLICY "Authenticated users can delete testimonials" ON testimonials
 -- Create storage bucket for project images (if not exists)
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('project-images', 'project-images', true)
-ON CONFLICT (id) DO NO
+ON CONFLICT (id) DO NOTHING;
 
--- Storage policies for project images
-CREATE POLICY "Public can view project images" ON storage.objects
-  FOR SELECT USING (bucket_id = 'project-images');
+-- Storage policies for project images (create if not exists)
+DO $$ 
+BEGIN
+  -- Public can view project images
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies 
+    WHERE schemaname = 'storage' 
+    AND tablename = 'objects' 
+    AND policyname = 'Public can view project images'
+  ) THEN
+    CREATE POLICY "Public can view project images" ON storage.objects
+      FOR SELECT USING (bucket_id = 'project-images');
+  END IF;
 
-CREATE POLICY "Authenticated users can upload project images" ON storage.objects
-  FOR INSERT WITH CHECK (
-    bucket_id = 'project-images' AND
-    auth.role() = 'authenticated'
-  );
+  -- Authenticated users can upload project images
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies 
+    WHERE schemaname = 'storage' 
+    AND tablename = 'objects' 
+    AND policyname = 'Authenticated users can upload project images'
+  ) THEN
+    CREATE POLICY "Authenticated users can upload project images" ON storage.objects
+      FOR INSERT WITH CHECK (
+        bucket_id = 'project-images' AND
+        auth.role() = 'authenticated'
+      );
+  END IF;
 
-CREATE POLICY "Authenticated users can update project images" ON storage.objects
-  FOR UPDATE USING (
-    bucket_id = 'project-images' AND
-    auth.role() = 'authenticated'
-  );
+  -- Authenticated users can update project images
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies 
+    WHERE schemaname = 'storage' 
+    AND tablename = 'objects' 
+    AND policyname = 'Authenticated users can update project images'
+  ) THEN
+    CREATE POLICY "Authenticated users can update project images" ON storage.objects
+      FOR UPDATE USING (
+        bucket_id = 'project-images' AND
+        auth.role() = 'authenticated'
+      );
+  END IF;
 
-CREATE POLICY "Authenticated users can delete project images" ON storage.objects
-  FOR DELETE USING (
-    bucket_id = 'project-images' AND
-    auth.role() = 'authenticated'
-  );
+  -- Authenticated users can delete project images
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies 
+    WHERE schemaname = 'storage' 
+    AND tablename = 'objects' 
+    AND policyname = 'Authenticated users can delete project images'
+  ) THEN
+    CREATE POLICY "Authenticated users can delete project images" ON storage.objects
+      FOR DELETE USING (
+        bucket_id = 'project-images' AND
+        auth.role() = 'authenticated'
+      );
+  END IF;
+END $$;
 
 -- Create indexes for better performance
 CREATE INDEX idx_projects_date ON projects(date DESC);
