@@ -4,11 +4,12 @@ import { Button } from "../components/ui/button";
 import { ServiceManager } from "../components/admin/ServiceManager";
 import { ProjectManager } from "../components/admin/ProjectManager";
 import { TestimonialManager } from "../components/admin/TestimonialManager";
+import { SettingsManager } from "../components/admin/SettingsManager";
 import { useServices } from "../src/hooks/useServices";
 import { useProjects } from "../src/hooks/useProjects";
 import { useTestimonials } from "../src/hooks/useTestimonials";
 import { useAuth } from "../src/contexts/AuthContext";
-import { Briefcase, FolderKanban, MessageSquare, Sun, Moon, ArrowLeft, LogOut } from "lucide-react";
+import { Briefcase, FolderKanban, MessageSquare, Settings, Sun, Moon, ArrowLeft, LogOut } from "lucide-react";
 
 interface AdminProps {
     onNavigate: (page: string) => void;
@@ -155,6 +156,13 @@ function AdminDashboard({ onNavigate, signOut }: { onNavigate: (page: string) =>
                             <MessageSquare className="w-4 h-4" />
                             Testimonials
                         </TabsTrigger>
+                        <TabsTrigger
+                            value="settings"
+                            className="flex items-center gap-2 data-[state=active]:bg-indigo-600 data-[state=active]:text-white text-gray-700 dark:text-gray-300"
+                        >
+                            <Settings className="w-4 h-4" />
+                            Settings
+                        </TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="overview" className="space-y-4">
@@ -210,6 +218,10 @@ function AdminDashboard({ onNavigate, signOut }: { onNavigate: (page: string) =>
 
                     <TabsContent value="testimonials">
                         <TestimonialManager />
+                    </TabsContent>
+
+                    <TabsContent value="settings">
+                        <SettingsManager />
                     </TabsContent>
                 </Tabs>
             </div>
