@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Supabase Auth</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #333; }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #4F46E5;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px 0;
+        }
+        button:hover { background: #4338CA; }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        .success {
+            background: #D1FAE5;
+            border: 1px solid #10B981;
+            color: #065F46;
+        }
+        .error {
+            background: #FEE2E2;
+            border: 1px solid #EF4444;
+            color: #991B1B;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Test Supabase Authentication</h1>
+        
+        <h3>1. Create User (Sign Up)</h3>
+        <input type="email" id="signupEmail" placeholder="admin@tamarsan.com" value="admin@tamarsan.com">
+        <input type="password" id="signupPassword" placeholder="Password" value="Tamarsan@2024!Secure">
+        <button onclick="signUp()">Create User</button>
+        
+        <h3>2. Login (Sign In)</h3>
+        <input type="email" id="loginEmail" placeholder="admin@tamarsan.com" value="admin@tamarsan.com">
+        <input type="password" id="loginPassword" placeholder="Password" value="Tamarsan@2024!Secure">
+        <button onclick="signIn()">Login</button>
+        
+        <h3>3. Check Current User</h3>
+        <button onclick="checkUser()">Check User</button>
+        
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        // Initialize Supabase
+        const supabaseUrl = 'https://mwbdqffwlywrsuqadxke.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im13YmRxZmZ3bHl3cnN1cWFkeGtlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3NDcyODMsImV4cCI6MjA3NjMyMzI4M30.VHfMI0Kmh9vaZiHJTN4c-e58BvxbsyLEL_5s9SX_L-0';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        function showResult(message, isSuccess) {
+            const result = document.getElementById('result');
+            result.style.display = 'block';
+            result.className = 'result ' + (isSuccess ? 'success' : 'error');
+            result.innerHTML = message;
+        }
+
+        async function signUp() {
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            
+            showResult('Creating user...', true);
+            
+            const { data, error } = await supabase.auth.signUp({
+                email: email,
+                password: password,
+            });
+            
+            if (error) {
+                showResult('❌ Error: ' + error.message, false);
+            } else {
+                showResult('✅ User created successfully!<br>Email: ' + data.user.email + '<br>Now try logging in!', true);
+            }
+        }
+
+        async function signIn() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            showResult('Logging in...', true);
+            
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: email,
+                password: password,
+            });
+            
+            if (error) {
+                showResult('❌ Login failed: ' + error.message + '<br><br>Make sure user exists! Try "Create User" first.', false);
+            } else {
+                showResult('✅ Login successful!<br>Email: ' + data.user.email + '<br>User ID: ' + data.user.id, true);
+            }
+        }
+
+        async function checkUser() {
+            showResult('Checking...', true);
+            
+            const { data: { user } } = await supabase.auth.getUser();
+            
+            if (user) {
+                showResult('✅ User is logged in!<br>Email: ' + user.email + '<br>User ID: ' + user.id, true);
+            } else {
+                showResult('❌ No user logged in. Try logging in first!', false);
+            }
+        }
+    </script>
+</body>
+</html>
