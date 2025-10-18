@@ -1,41 +1,85 @@
-import { useState, useEffect } from "react";
-import { projectStore, Project } from "../../src/data/store";
+import { useState } from "react";
+import { useProjects } from "../../src/hooks/useProjects";
+import { uploadImage, deleteImage } from "../../src/lib/storage";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
-import { Plus, Pencil, Trash2, FolderKanban } from "lucide-react";
+import { Plus, Pencil, Trash2, FolderKanban, Loader2, Upload, X } from "lucide-react";
 
-interface ProjectManagerProps {
-    onUpdate?: () => void;
-}
-
-export function ProjectManager({ onUpdate }: ProjectManagerProps) {
-    const [projects, setProjects] = useState<Project[]>([]);
+export function ProjectManager() {
+    const { projects, loading, addProject, updateProject, deleteProject } = useProjects();
     const [editing, setEditing] = useState<string | null>(null);
     const [showForm, setShowForm] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
         date: "",
         location: "",
         description: "",
-        image: "",
+        image_url: "",
         rate: ""
     });
+    const [imageFile, setImageFile] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState<string>("");
+    const [uploading, setUploading] = useState(false);
 
-    useEffect(() => {
-        setProjects(projectStore.getAll());
-    }, []);
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (editing) {
-            projectStore.update(editing, formData);
-        } else {
-            projectStore.add(formData);
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setImageFile(file);
+            // Create preview
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
         }
-        setProjects(projectStore.getAll());
+    };
+
+    const handleRemoveImage = () => {
+        setImageFile(null);
+        setImagePreview("");
+        setFormData({ ...formData, image_url: "" });
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSubmitting(true);
+
+        let imageUrl = formData.image_url;
+
+        // Upload image if a new file is selected
+        if (imageFile) {
+            setUploading(true);
+            const { url, error } = await uploadImage(imageFile);
+            setUploading(false);
+
+            if (error) {
+                alert(`Image upload failed: ${error}`);
+                setSubmitting(false);
+                return;
+            }
+
+            imageUrl = url || "";
+        }
+
+        const projectData = {
+            name: formData.name,
+            date: formData.date,
+            location: formData.location,
+            description: formData.description,
+            image_url: imageUrl || null,
+            rate: formData.rate ? parseFloat(formData.rate) : null
+        };
+
+        if (editing) {
+            await updateProject(editing, projectData);
+        } else {
+            await addProject(projectData);
+        }
+
         resetForm();
-        onUpdate?.();
+        setSubmitting(false);
     };
 
     const resetForm = () => {
@@ -44,26 +88,38 @@ export function ProjectManager({ onUpdate }: ProjectManagerProps) {
             date: "",
             location: "",
             description: "",
-            image: "",
+            image_url: "",
             rate: ""
         });
+        setImageFile(null);
+        setImagePreview("");
         setEditing(null);
         setShowForm(false);
     };
 
-    const handleEdit = (project: Project) => {
+    const handleEdit = (project: any) => {
         setEditing(project.id);
-        setFormData({ ...project });
+        setFormData({
+            name: project.name,
+            date: project.date,
+            location: project.location,
+            description: project.description,
+            image_url: project.image_url || "",
+            rate: project.rate?.toString() || ""
+        });
+        setImagePreview(project.image_url || "");
         setShowForm(true);
     };
 
-    const handleDelete = (id: string) => {
+    const handleDelete = async (id: string) => {
         if (confirm("Delete this project?")) {
-            projectStore.delete(id);
-            setProjects(projectStore.getAll());
-            onUpdate?.();
+            await deleteProject(id);
         }
     };
+
+    if (loading) {
+        return <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-indigo-600" /></div>;
+    }
 
     const inputClass = "bg-gray-50 dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white";
 
@@ -117,23 +173,82 @@ export function ProjectManager({ onUpdate }: ProjectManagerProps) {
                             rows={4}
                             required
                         />
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                                Project Image
+                            </label>
+
+                            {/* Image Preview */}
+                            {imagePreview && (
+                                <div className="relative mb-3">
+                                    <img
+                                        src={imagePreview}
+                                        alt="Preview"
+                                        className="w-full h-48 object-cover rounded-lg border border-gray-300 dark:border-slate-600"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={handleRemoveImage}
+                                        className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+                                    >
+                                        <X className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* File Upload */}
+                            <div className="flex gap-2">
+                                <label className="flex-1 cursor-pointer">
+                                    <div className="flex items-center justify-center gap-2 px-4 py-2 border-2 border-dashed border-gray-300 dark:border-slate-600 rounded-lg hover:border-indigo-500 transition-colors">
+                                        <Upload className="w-5 h-5 text-gray-600 dark:text-slate-400" />
+                                        <span className="text-sm text-gray-600 dark:text-slate-400">
+                                            {imageFile ? imageFile.name : "Choose image from device"}
+                                        </span>
+                                    </div>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleImageChange}
+                                        className="hidden"
+                                    />
+                                </label>
+                            </div>
+
+                            {/* Or use URL */}
+                            <div className="mt-2">
+                                <p className="text-xs text-gray-500 dark:text-slate-500 mb-1">Or paste image URL:</p>
+                                <Input
+                                    placeholder="https://example.com/image.jpg"
+                                    value={formData.image_url}
+                                    onChange={(e) => {
+                                        setFormData({ ...formData, image_url: e.target.value });
+                                        if (e.target.value) {
+                                            setImagePreview(e.target.value);
+                                            setImageFile(null);
+                                        }
+                                    }}
+                                    className={inputClass}
+                                />
+                            </div>
+
+                            <p className="text-xs text-gray-500 dark:text-slate-500 mt-1">
+                                Max size: 5MB. Supported: JPG, PNG, GIF, WebP
+                            </p>
+                        </div>
                         <Input
-                            placeholder="Image URL"
-                            value={formData.image}
-                            onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                            className={inputClass}
-                            required
-                        />
-                        <Input
-                            placeholder="Rate (e.g., 5/5, 4.5 stars)"
+                            type="number"
+                            step="0.1"
+                            min="0"
+                            max="5"
+                            placeholder="Rate (0-5)"
                             value={formData.rate}
                             onChange={(e) => setFormData({ ...formData, rate: e.target.value })}
                             className={inputClass}
-                            required
                         />
                         <div className="flex gap-2">
-                            <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700">
-                                {editing ? "Update" : "Add"} Project
+                            <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700" disabled={submitting || uploading}>
+                                {(submitting || uploading) ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+                                {uploading ? "Uploading..." : editing ? "Update" : "Add"} Project
                             </Button>
                             <Button type="button" variant="outline"
                                 className="border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-slate-700 bg-white dark:bg-transparent"

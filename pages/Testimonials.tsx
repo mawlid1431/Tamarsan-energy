@@ -2,42 +2,47 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, Star, Quote } from "lucide-react";
 import { Button } from "../components/ui/button";
+import { useTestimonials } from "../src/hooks/useTestimonials";
 
 export function Testimonials() {
-  const testimonials = [
-    {
-      rating: 5,
-      text: "Tamarsan transformed our community's access to power. The solar system is reliable and efficient, and we no longer depend on expensive diesel generators.",
-      author: "Community Leader",
-      location: "Togdheer Region",
-    },
-    {
-      rating: 5,
-      text: "Their professionalism and technical knowledge exceeded our expectations. They delivered a high-quality solar installation on time and within budget.",
-      author: "Business Owner",
-      location: "Hargeisa",
-    },
-    {
-      rating: 5,
-      text: "Thanks to Tamarsan's solar water system, our farm runs smoothly without diesel costs. The system has paid for itself in fuel savings alone.",
-      author: "Farmer",
-      location: "Badhan District",
-    },
-    {
-      rating: 5,
-      text: "The solar street lights have made our neighborhood much safer. We appreciate Tamarsan's commitment to quality and their excellent after-sales support.",
-      author: "Local Council Member",
-      location: "Erigavo",
-    },
-    {
-      rating: 5,
-      text: "Tamarsan's hybrid system has reduced our operating costs significantly. Their team was professional, knowledgeable, and responsive throughout the project.",
-      author: "Hospital Administrator",
-      location: "Burao",
-    },
-  ];
+  const { testimonials: dbTestimonials, loading } = useTestimonials();
+
+  const testimonials = dbTestimonials.map(t => ({
+    rating: t.rate || 5,
+    text: t.description,
+    author: t.role,
+    location: t.location,
+  }));
 
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  if (loading) {
+    return (
+      <div className="pt-20 min-h-screen flex items-center justify-center">
+        <p className="text-gray-600 dark:text-gray-400">Loading testimonials...</p>
+      </div>
+    );
+  }
+
+  if (testimonials.length === 0) {
+    return (
+      <div className="pt-20 min-h-screen">
+        <section className="py-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 className="text-4xl md:text-6xl mb-6">
+              Client <span className="text-primary">Testimonials</span>
+            </h1>
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-8">
+              No testimonials available yet. Add testimonials from the admin panel to display them here.
+            </p>
+            <a href="/admin" className="text-primary hover:underline">
+              Go to Admin Panel →
+            </a>
+          </div>
+        </section>
+      </div>
+    );
+  }
 
   const handlePrevious = () => {
     setCurrentIndex((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1));
@@ -134,8 +139,8 @@ export function Testimonials() {
                       key={index}
                       onClick={() => setCurrentIndex(index)}
                       className={`w-2 h-2 rounded-full transition-all ${index === currentIndex
-                          ? "bg-primary w-8"
-                          : "bg-muted-foreground/30"
+                        ? "bg-primary w-8"
+                        : "bg-muted-foreground/30"
                         }`}
                       aria-label={`Go to testimonial ${index + 1}`}
                     />

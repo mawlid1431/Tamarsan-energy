@@ -1,32 +1,50 @@
 import { motion } from "framer-motion";
 import { Star, ArrowRight, Quote } from "lucide-react";
 import { Button } from "./ui/button";
+import { useTestimonials } from "../src/hooks/useTestimonials";
 
 interface TestimonialsPreviewProps {
   onNavigate: (page: string) => void;
 }
 
 export function TestimonialsPreview({ onNavigate }: TestimonialsPreviewProps) {
-  const testimonials = [
-    {
-      rating: 5,
-      text: "Tamarsan transformed our community's access to power. The solar system is reliable and efficient.",
-      author: "Community Leader",
-      location: "Togdheer Region",
-    },
-    {
-      rating: 5,
-      text: "Their professionalism and technical knowledge exceeded our expectations. Delivered on time and within budget.",
-      author: "Business Owner",
-      location: "Hargeisa",
-    },
-    {
-      rating: 5,
-      text: "Thanks to Tamarsan's solar water system, our farm runs smoothly without diesel costs.",
-      author: "Farmer",
-      location: "Badhan District",
-    },
-  ];
+  const { testimonials: dbTestimonials, loading } = useTestimonials();
+
+  const testimonials = dbTestimonials.map(t => ({
+    rating: t.rate || 5,
+    text: t.description,
+    author: t.role,
+    location: t.location,
+  }));
+
+  if (loading) {
+    return (
+      <section className="py-24 bg-gray-50 dark:bg-gray-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <p className="text-gray-600 dark:text-gray-400">Loading testimonials...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (testimonials.length === 0) {
+    return (
+      <section className="py-24 bg-gray-50 dark:bg-gray-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl mb-6 text-gray-900 dark:text-white">
+              Testimonials
+            </h2>
+            <p className="text-lg text-gray-600 dark:text-gray-400">
+              No testimonials available yet. Check back soon!
+            </p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-24 bg-gray-50 dark:bg-gray-900">

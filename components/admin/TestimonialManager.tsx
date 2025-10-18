@@ -1,56 +1,58 @@
-import { useState, useEffect } from "react";
-import { testimonialStore, Testimonial } from "../../src/data/store";
+import { useState } from "react";
+import { useTestimonials } from "../../src/hooks/useTestimonials";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
-import { Plus, Pencil, Trash2, Star, MessageSquare } from "lucide-react";
+import { Plus, Pencil, Trash2, Star, MessageSquare, Loader2 } from "lucide-react";
 
-interface TestimonialManagerProps {
-    onUpdate?: () => void;
-}
-
-export function TestimonialManager({ onUpdate }: TestimonialManagerProps) {
-    const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+export function TestimonialManager() {
+    const { testimonials, loading, addTestimonial, updateTestimonial, deleteTestimonial } = useTestimonials();
     const [editing, setEditing] = useState<string | null>(null);
     const [showForm, setShowForm] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
     const [formData, setFormData] = useState({
-        rating: 5,
+        rate: 5,
         description: "",
         role: "",
         location: ""
     });
 
-    useEffect(() => {
-        setTestimonials(testimonialStore.getAll());
-    }, []);
-
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setSubmitting(true);
+
         if (editing) {
-            testimonialStore.update(editing, formData);
+            await updateTestimonial(editing, formData);
         } else {
-            testimonialStore.add(formData);
+            await addTestimonial(formData);
         }
-        setTestimonials(testimonialStore.getAll());
-        setFormData({ rating: 5, description: "", role: "", location: "" });
+
+        setFormData({ rate: 5, description: "", role: "", location: "" });
         setEditing(null);
         setShowForm(false);
-        onUpdate?.();
+        setSubmitting(false);
     };
 
-    const handleEdit = (testimonial: Testimonial) => {
+    const handleEdit = (testimonial: any) => {
         setEditing(testimonial.id);
-        setFormData({ ...testimonial });
+        setFormData({
+            rate: testimonial.rate || 5,
+            description: testimonial.description,
+            role: testimonial.role,
+            location: testimonial.location
+        });
         setShowForm(true);
     };
 
-    const handleDelete = (id: string) => {
+    const handleDelete = async (id: string) => {
         if (confirm("Delete this testimonial?")) {
-            testimonialStore.delete(id);
-            setTestimonials(testimonialStore.getAll());
-            onUpdate?.();
+            await deleteTestimonial(id);
         }
     };
+
+    if (loading) {
+        return <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-indigo-600" /></div>;
+    }
 
     const inputClass = "bg-gray-50 dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white";
 
@@ -82,11 +84,11 @@ export function TestimonialManager({ onUpdate }: TestimonialManagerProps) {
                                     <button
                                         key={rating}
                                         type="button"
-                                        onClick={() => setFormData({ ...formData, rating })}
+                                        onClick={() => setFormData({ ...formData, rate: rating })}
                                         className="focus:outline-none"
                                     >
                                         <Star
-                                            className={`w-6 h-6 ${rating <= formData.rating
+                                            className={`w-6 h-6 ${rating <= formData.rate
                                                 ? "fill-indigo-600 text-indigo-600 dark:fill-indigo-500 dark:text-indigo-500"
                                                 : "text-gray-300 dark:text-slate-600"
                                                 }`}
@@ -120,7 +122,8 @@ export function TestimonialManager({ onUpdate }: TestimonialManagerProps) {
                             />
                         </div>
                         <div className="flex gap-2">
-                            <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700">
+                            <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700" disabled={submitting}>
+                                {submitting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
                                 {editing ? "Update" : "Add"} Testimonial
                             </Button>
                             <Button
@@ -129,7 +132,7 @@ export function TestimonialManager({ onUpdate }: TestimonialManagerProps) {
                                 className="border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-slate-700 bg-white dark:bg-transparent"
                                 onClick={() => {
                                     setEditing(null);
-                                    setFormData({ rating: 5, description: "", role: "", location: "" });
+                                    setFormData({ rate: 5, description: "", role: "", location: "" });
                                     setShowForm(false);
                                 }}
                             >
@@ -155,7 +158,7 @@ export function TestimonialManager({ onUpdate }: TestimonialManagerProps) {
                         >
                             <div className="flex justify-between items-start mb-3">
                                 <div className="flex items-center gap-1">
-                                    {[...Array(testimonial.rating)].map((_, i) => (
+                                    {[...Array(testimonial.rate || 5)].map((_, i) => (
                                         <Star key={i} className="w-4 h-4 fill-indigo-600 text-indigo-600 dark:fill-indigo-500 dark:text-indigo-500" />
                                     ))}
                                 </div>

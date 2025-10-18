@@ -3,12 +3,51 @@ import { motion } from "framer-motion";
 import { MapPin, Zap, ArrowRight } from "lucide-react";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { ProjectDetail } from "../components/ProjectDetail";
+import { useProjects } from "../src/hooks/useProjects";
 
 export function Projects() {
   const [selectedProject, setSelectedProject] = useState<any>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const { projects: dbProjects, loading } = useProjects();
 
-  const projects = [
+  const projects = dbProjects.map(p => ({
+    title: p.name,
+    location: p.location,
+    description: p.description,
+    image: p.image_url || "https://images.unsplash.com/photo-1630148180214-417337ce9652?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoeWJyaWQlMjBzb2xhciUyMHN5c3RlbXxlbnwxfHx8fDE3NjA3NzQ1MTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    impact: p.rate ? `${p.rate}/5 rating` : "New project",
+    date: p.date,
+  }));
+
+  if (loading) {
+    return (
+      <div className="pt-20 min-h-screen flex items-center justify-center">
+        <p className="text-gray-600 dark:text-gray-400">Loading projects...</p>
+      </div>
+    );
+  }
+
+  if (projects.length === 0) {
+    return (
+      <div className="pt-20 min-h-screen">
+        <section className="py-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 className="text-4xl md:text-6xl mb-6">
+              Our <span className="text-primary">Projects</span>
+            </h1>
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-8">
+              No projects available yet. Add projects from the admin panel to display them here.
+            </p>
+            <a href="/admin" className="text-primary hover:underline">
+              Go to Admin Panel →
+            </a>
+          </div>
+        </section>
+      </div>
+    );
+  }
+
+  const oldDefaultProjects = [
     {
       title: "Hybrid Energy Systems",
       location: "Berbera, Burao, and Borama",

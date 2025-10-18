@@ -4,26 +4,27 @@ import { Button } from "../components/ui/button";
 import { ServiceManager } from "../components/admin/ServiceManager";
 import { ProjectManager } from "../components/admin/ProjectManager";
 import { TestimonialManager } from "../components/admin/TestimonialManager";
-import { serviceStore, projectStore, testimonialStore } from "../src/data/store";
+import { useServices } from "../src/hooks/useServices";
+import { useProjects } from "../src/hooks/useProjects";
+import { useTestimonials } from "../src/hooks/useTestimonials";
 import { Briefcase, FolderKanban, MessageSquare, Sun, Moon, ArrowLeft, LogOut } from "lucide-react";
 
 export function Admin() {
     const [activeTab, setActiveTab] = useState("overview");
     const [isDark, setIsDark] = useState(false);
-    const [counts, setCounts] = useState({ services: 0, projects: 0, testimonials: 0 });
+    const { services } = useServices();
+    const { projects } = useProjects();
+    const { testimonials } = useTestimonials();
 
     useEffect(() => {
         const isDarkMode = document.documentElement.classList.contains("dark");
         setIsDark(isDarkMode);
-        updateCounts();
     }, []);
 
-    const updateCounts = () => {
-        setCounts({
-            services: serviceStore.getAll().length,
-            projects: projectStore.getAll().length,
-            testimonials: testimonialStore.getAll().length,
-        });
+    const counts = {
+        services: services.length,
+        projects: projects.length,
+        testimonials: testimonials.length,
     };
 
     const toggleTheme = () => {
@@ -171,15 +172,15 @@ export function Admin() {
                     </TabsContent>
 
                     <TabsContent value="services">
-                        <ServiceManager onUpdate={updateCounts} />
+                        <ServiceManager />
                     </TabsContent>
 
                     <TabsContent value="projects">
-                        <ProjectManager onUpdate={updateCounts} />
+                        <ProjectManager />
                     </TabsContent>
 
                     <TabsContent value="testimonials">
-                        <TestimonialManager onUpdate={updateCounts} />
+                        <TestimonialManager />
                     </TabsContent>
                 </Tabs>
             </div>

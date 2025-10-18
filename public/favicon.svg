@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Sun icon with solar panel -->
+  <circle cx="50" cy="35" r="20" fill="#C9284C"/>
+  <!-- Sun rays -->
+  <line x1="50" y1="15" x2="50" y2="5" stroke="#C9284C" stroke-width="4"/>
+  <line x1="63" y1="22" x2="70" y2="15" stroke="#C9284C" stroke-width="4"/>
+  <line x1="70" y1="35" x2="80" y2="35" stroke="#C9284C" stroke-width="4"/>
+  <line x1="63" y1="48" x2="70" y2="55" stroke="#C9284C" stroke-width="4"/>
+  <line x1="37" y1="48" x2="30" y2="55" stroke="#C9284C" stroke-width="4"/>
+  <line x1="30" y1="35" x2="20" y2="35" stroke="#C9284C" stroke-width="4"/>
+  <line x1="37" y1="22" x2="30" y2="15" stroke="#C9284C" stroke-width="4"/>
+  <!-- Solar panel -->
+  <path d="M 35 60 Q 50 85 65 60" stroke="#C9284C" stroke-width="5" fill="none"/>
+  <line x1="38" y1="65" x2="45" y2="72" stroke="#C9284C" stroke-width="4"/>
+  <line x1="42" y1="68" x2="49" y2="75" stroke="#C9284C" stroke-width="4"/>
+  <line x1="46" y1="71" x2="53" y2="78" stroke="#C9284C" stroke-width="4"/>
+</svg>
