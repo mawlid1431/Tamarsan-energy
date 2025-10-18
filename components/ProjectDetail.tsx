@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X, MapPin, Calendar, Zap, Users, DollarSign } from "lucide-react";
-import { Button } from "./ui/button";
+// import { Button } from "./ui/button";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 
 interface ProjectDetailProps {

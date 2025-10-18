@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useProjects } from "../../src/hooks/useProjects";
-import { uploadImage, deleteImage } from "../../src/lib/storage";
+import { uploadImage } from "../../src/lib/storage";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
@@ -268,12 +268,12 @@ export function ProjectManager() {
                 <div className="grid grid-cols-1 gap-4">
                     {projects.map((project) => (
                         <div key={project.id} className="bg-white dark:bg-slate-900 p-6 rounded-lg border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all">
-                            <div className="flex justify-between items-start mb-3">
-                                <div>
-                                    <h4 className="font-semibold text-gray-900 dark:text-white">{project.name}</h4>
-                                    <p className="text-sm text-gray-600 dark:text-slate-400">{project.location} • {project.date}</p>
+                            <div className="flex justify-between items-start mb-3 gap-4">
+                                <div className="flex-1 min-w-0">
+                                    <h4 className="font-semibold text-gray-900 dark:text-white break-words">{project.name}</h4>
+                                    <p className="text-sm text-gray-600 dark:text-slate-400 break-words">{project.location} • {project.date}</p>
                                 </div>
-                                <div className="flex gap-2">
+                                <div className="flex gap-2 flex-shrink-0">
                                     <Button size="sm" variant="ghost"
                                         className="text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white"
                                         onClick={() => handleEdit(project)}>
@@ -286,7 +286,7 @@ export function ProjectManager() {
                                     </Button>
                                 </div>
                             </div>
-                            <p className="text-sm text-gray-600 dark:text-slate-400 mb-2">{project.description}</p>
+                            <p className="text-sm text-gray-600 dark:text-slate-400 mb-2 break-words whitespace-normal">{project.description}</p>
                             <div className="flex items-center gap-2 text-xs text-indigo-600 dark:text-indigo-400">
                                 <span className="font-semibold">Rate: {project.rate}</span>
                             </div>

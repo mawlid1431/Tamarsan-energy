@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { MessageCircle } from "lucide-react";
+// import { MessageCircle } from "lucide-react";
 
 interface WhatsAppButtonProps {
   phoneNumber?: string;

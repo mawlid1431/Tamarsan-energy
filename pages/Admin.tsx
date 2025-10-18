@@ -72,16 +72,16 @@ function AdminDashboard({ onNavigate, signOut }: { onNavigate: (page: string) =>
             {/* Header */}
             <header className="bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 shadow-sm">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                         <div>
-                            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+                            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1">
                                 Admin Dashboard
                             </h1>
-                            <p className="text-sm text-gray-600 dark:text-slate-400">
+                            <p className="text-xs sm:text-sm text-gray-600 dark:text-slate-400">
                                 Manage Tamarsan Charity operations
                             </p>
                         </div>
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
                             <Button
                                 onClick={toggleTheme}
                                 variant="outline"
@@ -94,10 +94,10 @@ function AdminDashboard({ onNavigate, signOut }: { onNavigate: (page: string) =>
                                 onClick={handleBackToSite}
                                 variant="outline"
                                 size="sm"
-                                className="border-gray-300 dark:border-slate-600 hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-700 dark:text-white"
+                                className="border-gray-300 dark:border-slate-600 hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-700 dark:text-white text-xs sm:text-sm"
                             >
-                                <ArrowLeft className="w-4 h-4 mr-2" />
-                                Back to Site
+                                <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
+                                <span className="hidden sm:inline">Back to Site</span>
                             </Button>
                             <Button
                                 onClick={async () => {
@@ -106,10 +106,11 @@ function AdminDashboard({ onNavigate, signOut }: { onNavigate: (page: string) =>
                                 }}
                                 variant="outline"
                                 size="sm"
-                                className="border-red-300 dark:border-red-600 hover:bg-red-50 dark:hover:bg-red-600 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-white"
+                                className="border-red-300 dark:border-red-600 hover:bg-red-50 dark:hover:bg-red-600 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-white text-xs sm:text-sm"
                             >
-                                <LogOut className="w-4 h-4 mr-2" />
-                                Logout
+                                <LogOut className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
+                                <span className="hidden sm:inline">Logout</span>
+                                <span className="sm:hidden">Out</span>
                             </Button>
                         </div>
                     </div>
@@ -120,90 +121,94 @@ function AdminDashboard({ onNavigate, signOut }: { onNavigate: (page: string) =>
 
                 {/* Stats Card - Only show on overview */}
                 {activeTab === "overview" && (
-                    <div className="bg-white dark:bg-slate-800 rounded-xl p-6 mb-6 border border-gray-200 dark:border-slate-700 shadow-sm">
+                    <div className="bg-white dark:bg-slate-800 rounded-xl p-4 sm:p-6 mb-4 sm:mb-6 border border-gray-200 dark:border-slate-700 shadow-sm">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm text-gray-600 dark:text-slate-400 mb-1">Total Projects</p>
-                                <p className="text-4xl font-bold text-gray-900 dark:text-white">{counts.projects}</p>
+                                <p className="text-xs sm:text-sm text-gray-600 dark:text-slate-400 mb-1">Total Projects</p>
+                                <p className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">{counts.projects}</p>
                             </div>
-                            <div className="w-14 h-14 bg-indigo-600 rounded-xl flex items-center justify-center">
-                                <FolderKanban className="w-7 h-7 text-white" />
+                            <div className="w-12 h-12 sm:w-14 sm:h-14 bg-indigo-600 rounded-xl flex items-center justify-center">
+                                <FolderKanban className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
                             </div>
                         </div>
                     </div>
                 )}
 
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-                    <TabsList className="bg-white dark:bg-slate-900 p-1 rounded-lg border border-gray-200 dark:border-slate-700 shadow-sm">
+                    <TabsList className="bg-white dark:bg-slate-900 p-1 rounded-lg border border-gray-200 dark:border-slate-700 shadow-sm grid grid-cols-2 sm:grid-cols-4 gap-1">
                         <TabsTrigger
                             value="projects"
-                            className="flex items-center gap-2 data-[state=active]:bg-indigo-600 data-[state=active]:text-white text-gray-700 dark:text-gray-300"
+                            className="flex items-center justify-center gap-1 sm:gap-2 data-[state=active]:bg-indigo-600 data-[state=active]:text-white text-gray-700 dark:text-gray-300 text-xs sm:text-sm px-2 sm:px-4"
                         >
-                            <FolderKanban className="w-4 h-4" />
-                            Projects
+                            <FolderKanban className="w-3 h-3 sm:w-4 sm:h-4" />
+                            <span className="hidden sm:inline">Projects</span>
+                            <span className="sm:hidden">Projects</span>
                         </TabsTrigger>
                         <TabsTrigger
                             value="services"
-                            className="flex items-center gap-2 data-[state=active]:bg-indigo-600 data-[state=active]:text-white text-gray-700 dark:text-gray-300"
+                            className="flex items-center justify-center gap-1 sm:gap-2 data-[state=active]:bg-indigo-600 data-[state=active]:text-white text-gray-700 dark:text-gray-300 text-xs sm:text-sm px-2 sm:px-4"
                         >
-                            <Briefcase className="w-4 h-4" />
-                            Services
+                            <Briefcase className="w-3 h-3 sm:w-4 sm:h-4" />
+                            <span className="hidden sm:inline">Services</span>
+                            <span className="sm:hidden">Services</span>
                         </TabsTrigger>
                         <TabsTrigger
                             value="testimonials"
-                            className="flex items-center gap-2 data-[state=active]:bg-indigo-600 data-[state=active]:text-white text-gray-700 dark:text-gray-300"
+                            className="flex items-center justify-center gap-1 sm:gap-2 data-[state=active]:bg-indigo-600 data-[state=active]:text-white text-gray-700 dark:text-gray-300 text-xs sm:text-sm px-2 sm:px-4"
                         >
-                            <MessageSquare className="w-4 h-4" />
-                            Testimonials
+                            <MessageSquare className="w-3 h-3 sm:w-4 sm:h-4" />
+                            <span className="hidden sm:inline">Testimonials</span>
+                            <span className="sm:hidden">Reviews</span>
                         </TabsTrigger>
                         <TabsTrigger
                             value="settings"
-                            className="flex items-center gap-2 data-[state=active]:bg-indigo-600 data-[state=active]:text-white text-gray-700 dark:text-gray-300"
+                            className="flex items-center justify-center gap-1 sm:gap-2 data-[state=active]:bg-indigo-600 data-[state=active]:text-white text-gray-700 dark:text-gray-300 text-xs sm:text-sm px-2 sm:px-4"
                         >
-                            <Settings className="w-4 h-4" />
-                            Settings
+                            <Settings className="w-3 h-3 sm:w-4 sm:h-4" />
+                            <span className="hidden sm:inline">Settings</span>
+                            <span className="sm:hidden">Settings</span>
                         </TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="overview" className="space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                             <button
                                 onClick={() => setActiveTab("services")}
-                                className="bg-white dark:bg-slate-900 p-8 rounded-lg border border-gray-200 dark:border-slate-700 hover:border-indigo-600 transition-all duration-300 text-left group cursor-pointer shadow-sm hover:shadow-md"
+                                className="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-lg border border-gray-200 dark:border-slate-700 hover:border-indigo-600 transition-all duration-300 text-left group cursor-pointer shadow-sm hover:shadow-md"
                             >
                                 <div className="flex items-center justify-between mb-4">
-                                    <div className="w-14 h-14 bg-indigo-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                                        <Briefcase className="w-7 h-7 text-white" />
+                                    <div className="w-12 h-12 sm:w-14 sm:h-14 bg-indigo-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                        <Briefcase className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
                                     </div>
                                 </div>
-                                <p className="text-sm text-gray-600 dark:text-slate-400 mb-2">Total: {counts.services}</p>
-                                <p className="text-2xl font-bold text-gray-900 dark:text-white">Services</p>
+                                <p className="text-xs sm:text-sm text-gray-600 dark:text-slate-400 mb-2">Total: {counts.services}</p>
+                                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Services</p>
                             </button>
 
                             <button
                                 onClick={() => setActiveTab("projects")}
-                                className="bg-white dark:bg-slate-900 p-8 rounded-lg border border-gray-200 dark:border-slate-700 hover:border-indigo-600 transition-all duration-300 text-left group cursor-pointer shadow-sm hover:shadow-md"
+                                className="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-lg border border-gray-200 dark:border-slate-700 hover:border-indigo-600 transition-all duration-300 text-left group cursor-pointer shadow-sm hover:shadow-md"
                             >
                                 <div className="flex items-center justify-between mb-4">
-                                    <div className="w-14 h-14 bg-indigo-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                                        <FolderKanban className="w-7 h-7 text-white" />
+                                    <div className="w-12 h-12 sm:w-14 sm:h-14 bg-indigo-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                        <FolderKanban className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
                                     </div>
                                 </div>
-                                <p className="text-sm text-gray-600 dark:text-slate-400 mb-2">Total: {counts.projects}</p>
-                                <p className="text-2xl font-bold text-gray-900 dark:text-white">Projects</p>
+                                <p className="text-xs sm:text-sm text-gray-600 dark:text-slate-400 mb-2">Total: {counts.projects}</p>
+                                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Projects</p>
                             </button>
 
                             <button
                                 onClick={() => setActiveTab("testimonials")}
-                                className="bg-white dark:bg-slate-900 p-8 rounded-lg border border-gray-200 dark:border-slate-700 hover:border-indigo-600 transition-all duration-300 text-left group cursor-pointer shadow-sm hover:shadow-md"
+                                className="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-lg border border-gray-200 dark:border-slate-700 hover:border-indigo-600 transition-all duration-300 text-left group cursor-pointer shadow-sm hover:shadow-md"
                             >
                                 <div className="flex items-center justify-between mb-4">
-                                    <div className="w-14 h-14 bg-indigo-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                                        <MessageSquare className="w-7 h-7 text-white" />
+                                    <div className="w-12 h-12 sm:w-14 sm:h-14 bg-indigo-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                        <MessageSquare className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
                                     </div>
                                 </div>
-                                <p className="text-sm text-gray-600 dark:text-slate-400 mb-2">Total: {counts.testimonials}</p>
-                                <p className="text-2xl font-bold text-gray-900 dark:text-white">Testimonials</p>
+                                <p className="text-xs sm:text-sm text-gray-600 dark:text-slate-400 mb-2">Total: {counts.testimonials}</p>
+                                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Testimonials</p>
                             </button>
                         </div>
                     </TabsContent>

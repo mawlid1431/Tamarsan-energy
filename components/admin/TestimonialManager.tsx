@@ -156,13 +156,13 @@ export function TestimonialManager() {
                             key={testimonial.id}
                             className="bg-white dark:bg-slate-900 p-6 rounded-lg border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all"
                         >
-                            <div className="flex justify-between items-start mb-3">
-                                <div className="flex items-center gap-1">
+                            <div className="flex justify-between items-start mb-3 gap-4">
+                                <div className="flex items-center gap-1 flex-shrink-0">
                                     {[...Array(testimonial.rate || 5)].map((_, i) => (
                                         <Star key={i} className="w-4 h-4 fill-indigo-600 text-indigo-600 dark:fill-indigo-500 dark:text-indigo-500" />
                                     ))}
                                 </div>
-                                <div className="flex gap-2">
+                                <div className="flex gap-2 flex-shrink-0">
                                     <Button
                                         size="sm"
                                         variant="ghost"
@@ -181,10 +181,10 @@ export function TestimonialManager() {
                                     </Button>
                                 </div>
                             </div>
-                            <p className="text-sm text-gray-600 dark:text-slate-400 mb-3">"{testimonial.description}"</p>
+                            <p className="text-sm text-gray-600 dark:text-slate-400 mb-3 break-words whitespace-normal">"{testimonial.description}"</p>
                             <div className="text-xs text-gray-500 dark:text-slate-500">
-                                <p className="font-medium text-gray-900 dark:text-white">{testimonial.role}</p>
-                                <p>{testimonial.location}</p>
+                                <p className="font-medium text-gray-900 dark:text-white break-words">{testimonial.role}</p>
+                                <p className="break-words">{testimonial.location}</p>
                             </div>
                         </div>
                     ))}

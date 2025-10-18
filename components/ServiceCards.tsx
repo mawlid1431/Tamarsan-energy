@@ -1,15 +1,10 @@
 import { motion } from "framer-motion";
-import { Lightbulb, Sun, Wrench, ArrowRight, Zap, Battery, Wind, CheckCircle, Settings, Cpu, Power, Gauge } from "lucide-react";
+import { Lightbulb, Sun, Wrench, ArrowRight, Zap, Battery, Wind, Settings, Cpu, Power, Gauge } from "lucide-react";
 import { useServices } from "../src/hooks/useServices";
 
 interface ServiceCardsProps {
   onNavigate?: (page: string) => void;
 }
-
-// Icon mapping
-const iconMap: Record<string, any> = {
-  Lightbulb, Sun, Wrench, Zap, Battery, Wind
-};
 
 export function ServiceCards({ onNavigate }: ServiceCardsProps = {}) {
   const { services, loading } = useServices();
@@ -42,8 +37,6 @@ export function ServiceCards({ onNavigate }: ServiceCardsProps = {}) {
       </section>
     );
   }
-
-  const displayServices = services;
 
   return (
     <section className="py-24 bg-gray-50 dark:bg-gray-900">

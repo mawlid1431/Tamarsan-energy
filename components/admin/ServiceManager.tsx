@@ -167,10 +167,10 @@ export function ServiceManager() {
                         return (
                             <div key={service.id} className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-gray-200 dark:border-slate-700 hover:border-indigo-600 transition-all shadow-sm hover:shadow-md">
                                 <div className="flex justify-between items-start mb-4">
-                                    <div className="w-14 h-14 bg-indigo-600 rounded-xl flex items-center justify-center">
+                                    <div className="w-14 h-14 bg-indigo-600 rounded-xl flex items-center justify-center flex-shrink-0">
                                         <ServiceIcon className="w-7 h-7 text-white" />
                                     </div>
-                                    <div className="flex gap-2">
+                                    <div className="flex gap-2 flex-shrink-0">
                                         <Button size="sm" variant="ghost" className="text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white" onClick={() => handleEdit(service)}>
                                             <Pencil className="w-4 h-4" />
                                         </Button>
@@ -179,9 +179,9 @@ export function ServiceManager() {
                                         </Button>
                                     </div>
                                 </div>
-                                <h4 className="text-xl font-bold text-gray-900 dark:text-white mb-3">{service.title}</h4>
-                                <p className="text-sm text-gray-600 dark:text-slate-400">{service.description}</p>
-                                <p className="text-xs text-indigo-600 dark:text-indigo-400 mt-2">Icon: {service.icon}</p>
+                                <h4 className="text-xl font-bold text-gray-900 dark:text-white mb-3 break-words">{service.title}</h4>
+                                <p className="text-sm text-gray-600 dark:text-slate-400 break-words whitespace-normal">{service.description}</p>
+                                <p className="text-xs text-indigo-600 dark:text-indigo-400 mt-2 break-words">Icon: {service.icon}</p>
                             </div>
                         );
                     })}

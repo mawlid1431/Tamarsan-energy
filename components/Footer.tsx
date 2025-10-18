@@ -1,4 +1,4 @@
-import { Mail, Phone, MapPin } from "lucide-react";
+// import { Mail, Phone, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
 import { Logo } from "./Logo";
 

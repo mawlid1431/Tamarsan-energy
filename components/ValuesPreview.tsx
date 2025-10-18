@@ -1,12 +1,12 @@
 import { motion } from "framer-motion";
-import { Leaf, Lightbulb, ArrowRight } from "lucide-react";
-import { Button } from "./ui/button";
+import { Leaf, Lightbulb } from "lucide-react";
+// import { Button } from "./ui/button";
 
 interface ValuesPreviewProps {
   onNavigate: (page: string) => void;
 }
 
-export function ValuesPreview({ onNavigate }: ValuesPreviewProps) {
+export function ValuesPreview({ }: ValuesPreviewProps) {
   const values = [
     {
       icon: Leaf,

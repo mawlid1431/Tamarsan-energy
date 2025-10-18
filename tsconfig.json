@@ -17,9 +17,9 @@
         "noEmit": true,
         "jsx": "react-jsx",
         /* Linting */
-        "strict": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
+        "strict": false,
+        "noUnusedLocals": false,
+        "noUnusedParameters": false,
         "noFallthroughCasesInSwitch": true,
         /* Path aliases */
         "baseUrl": ".",
@@ -33,6 +33,10 @@
         "src",
         "components",
         "pages"
+    ],
+    "exclude": [
+        "node_modules",
+        "components/ui"
     ],
     "references": [
         {

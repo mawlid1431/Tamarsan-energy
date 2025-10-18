@@ -22,7 +22,7 @@ export function Setup({ onNavigate }: SetupProps) {
 
         try {
             // Try to sign up
-            const { data, error: signUpError } = await supabase.auth.signUp({
+            const { error: signUpError } = await supabase.auth.signUp({
                 email,
                 password,
                 options: {
