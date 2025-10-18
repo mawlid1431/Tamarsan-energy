@@ -1,6 +1,7 @@
 -- ============================================
--- SIMPLE SETUP - Database Schema (No Storage RLS)
--- Run this in Supabase SQL Editor
+-- COMPLETE ONE-TIME SETUP
+-- Run this ONCE in Supabase SQL Editor
+-- Sets up ALL tables and storage with policies
 -- ============================================
 
 -- Enable UUID extension
@@ -53,66 +54,105 @@ ALTER TABLE services ENABLE ROW LEVEL SECURITY;
 ALTER TABLE testimonials ENABLE ROW LEVEL SECURITY;
 
 -- ============================================
--- DROP EXISTING POLICIES (for fresh start)
+-- DROP OLD POLICIES (Clean Slate)
 -- ============================================
 
+-- Projects
 DROP POLICY IF EXISTS "Public can view projects" ON projects;
-DROP POLICY IF EXISTS "Authenticated users can insert projects" ON projects;
-DROP POLICY IF EXISTS "Authenticated users can update projects" ON projects;
-DROP POLICY IF EXISTS "Authenticated users can delete projects" ON projects;
+DROP POLICY IF EXISTS "Anyone can insert projects" ON projects;
+DROP POLICY IF EXISTS "Anyone can update projects" ON projects;
+DROP POLICY IF EXISTS "Anyone can delete projects" ON projects;
 
+-- Services
 DROP POLICY IF EXISTS "Public can view services" ON services;
-DROP POLICY IF EXISTS "Authenticated users can insert services" ON services;
-DROP POLICY IF EXISTS "Authenticated users can update services" ON services;
-DROP POLICY IF EXISTS "Authenticated users can delete services" ON services;
+DROP POLICY IF EXISTS "Anyone can insert services" ON services;
+DROP POLICY IF EXISTS "Anyone can update services" ON services;
+DROP POLICY IF EXISTS "Anyone can delete services" ON services;
 
+-- Testimonials
 DROP POLICY IF EXISTS "Public can view testimonials" ON testimonials;
-DROP POLICY IF EXISTS "Authenticated users can insert testimonials" ON testimonials;
-DROP POLICY IF EXISTS "Authenticated users can update testimonials" ON testimonials;
-DROP POLICY IF EXISTS "Authenticated users can delete testimonials" ON testimonials;
+DROP POLICY IF EXISTS "Anyone can insert testimonials" ON testimonials;
+DROP POLICY IF EXISTS "Anyone can update testimonials" ON testimonials;
+DROP POLICY IF EXISTS "Anyone can delete testimonials" ON testimonials;
 
 -- ============================================
--- CREATE RLS POLICIES
+-- CREATE TABLE POLICIES (Public Access)
 -- ============================================
 
--- Projects policies (public read, anyone can write for now)
+-- Projects policies
 CREATE POLICY "Public can view projects" ON projects
-  FOR SELECT USING (true);
+  FOR SELECT TO public USING (true);
 
 CREATE POLICY "Anyone can insert projects" ON projects
-  FOR INSERT WITH CHECK (true);
+  FOR INSERT TO public WITH CHECK (true);
 
 CREATE POLICY "Anyone can update projects" ON projects
-  FOR UPDATE USING (true);
+  FOR UPDATE TO public USING (true);
 
 CREATE POLICY "Anyone can delete projects" ON projects
-  FOR DELETE USING (true);
+  FOR DELETE TO public USING (true);
 
--- Services policies (public read, anyone can write for now)
+-- Services policies
 CREATE POLICY "Public can view services" ON services
-  FOR SELECT USING (true);
+  FOR SELECT TO public USING (true);
 
 CREATE POLICY "Anyone can insert services" ON services
-  FOR INSERT WITH CHECK (true);
+  FOR INSERT TO public WITH CHECK (true);
 
 CREATE POLICY "Anyone can update services" ON services
-  FOR UPDATE USING (true);
+  FOR UPDATE TO public USING (true);
 
 CREATE POLICY "Anyone can delete services" ON services
-  FOR DELETE USING (true);
+  FOR DELETE TO public USING (true);
 
--- Testimonials policies (public read, anyone can write for now)
+-- Testimonials policies
 CREATE POLICY "Public can view testimonials" ON testimonials
-  FOR SELECT USING (true);
+  FOR SELECT TO public USING (true);
 
 CREATE POLICY "Anyone can insert testimonials" ON testimonials
-  FOR INSERT WITH CHECK (true);
+  FOR INSERT TO public WITH CHECK (true);
 
 CREATE POLICY "Anyone can update testimonials" ON testimonials
-  FOR UPDATE USING (true);
+  FOR UPDATE TO public USING (true);
 
 CREATE POLICY "Anyone can delete testimonials" ON testimonials
-  FOR DELETE USING (true);
+  FOR DELETE TO public USING (true);
+
+-- ============================================
+-- STORAGE SETUP
+-- ============================================
+
+-- Create storage bucket (public)
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('project-images', 'project-images', true)
+ON CONFLICT (id) DO UPDATE SET public = true;
+
+-- Drop old storage policies
+DROP POLICY IF EXISTS "Public can view images" ON storage.objects;
+DROP POLICY IF EXISTS "Public can upload images" ON storage.objects;
+DROP POLICY IF EXISTS "Public can update images" ON storage.objects;
+DROP POLICY IF EXISTS "Public can delete images" ON storage.objects;
+DROP POLICY IF EXISTS "Anyone can view images" ON storage.objects;
+DROP POLICY IF EXISTS "Anyone can upload images" ON storage.objects;
+DROP POLICY IF EXISTS "Anyone can update images" ON storage.objects;
+DROP POLICY IF EXISTS "Anyone can delete images" ON storage.objects;
+
+-- Create storage policies (Public Access)
+CREATE POLICY "Anyone can view images" ON storage.objects
+  FOR SELECT TO public
+  USING (bucket_id = 'project-images');
+
+CREATE POLICY "Anyone can upload images" ON storage.objects
+  FOR INSERT TO public
+  WITH CHECK (bucket_id = 'project-images');
+
+CREATE POLICY "Anyone can update images" ON storage.objects
+  FOR UPDATE TO public
+  USING (bucket_id = 'project-images');
+
+CREATE POLICY "Anyone can delete images" ON storage.objects
+  FOR DELETE TO public
+  USING (bucket_id = 'project-images');
 
 -- ============================================
 -- CREATE INDEXES
@@ -126,7 +166,6 @@ CREATE INDEX IF NOT EXISTS idx_testimonials_rate ON testimonials(rate DESC);
 -- CREATE FUNCTIONS
 -- ============================================
 
--- Function to update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -162,16 +201,52 @@ CREATE TRIGGER update_testimonials_updated_at
 -- VERIFICATION
 -- ============================================
 
+-- Check tables
 SELECT 
-  'Tables created: ' || COUNT(*)::text as status
+  '✅ Tables: ' || COUNT(*)::text || ' created' as status
 FROM information_schema.tables 
 WHERE table_schema = 'public' 
 AND table_name IN ('projects', 'services', 'testimonials');
 
+-- Check table policies
 SELECT 
-  'RLS Policies: ' || COUNT(*)::text as status
+  '✅ Table Policies: ' || COUNT(*)::text || ' created' as status
 FROM pg_policies 
 WHERE schemaname = 'public' 
 AND tablename IN ('projects', 'services', 'testimonials');
 
-SELECT '✅ Database setup complete! Tables are ready to use.' as message;
+-- Check storage bucket
+SELECT 
+  '✅ Storage Bucket: ' || 
+  CASE WHEN EXISTS (SELECT 1 FROM storage.buckets WHERE id = 'project-images' AND public = true) 
+    THEN 'Created (Public)' 
+    ELSE 'Missing' 
+  END as status;
+
+-- Check storage policies
+SELECT 
+  '✅ Storage Policies: ' || COUNT(*)::text || ' created' as status
+FROM pg_policies 
+WHERE schemaname = 'storage' 
+AND tablename = 'objects' 
+AND policyname LIKE '%images%';
+
+-- ============================================
+-- SUCCESS MESSAGE
+-- ============================================
+
+SELECT '
+🎉 SETUP COMPLETE! 🎉
+
+✅ All tables created
+✅ All policies created (public access)
+✅ Storage bucket created (public)
+✅ Storage policies created (public access)
+✅ Image uploads will work now!
+
+⚠️  SECURITY NOTE:
+Currently set to PUBLIC ACCESS for testing.
+For production, add authentication and restrict policies.
+
+🚀 Ready to use! Go to your admin panel and start adding content!
+' as message;
