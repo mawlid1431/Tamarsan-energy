@@ -7,9 +7,34 @@ import { TestimonialManager } from "../components/admin/TestimonialManager";
 import { useServices } from "../src/hooks/useServices";
 import { useProjects } from "../src/hooks/useProjects";
 import { useTestimonials } from "../src/hooks/useTestimonials";
+import { useAuth } from "../src/contexts/AuthContext";
 import { Briefcase, FolderKanban, MessageSquare, Sun, Moon, ArrowLeft, LogOut } from "lucide-react";
 
-export function Admin() {
+interface AdminProps {
+    onNavigate: (page: string) => void;
+}
+
+export function Admin({ onNavigate }: AdminProps) {
+    const { user, signOut, loading: authLoading } = useAuth();
+
+    // Redirect to login if not authenticated
+    if (authLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+            </div>
+        );
+    }
+
+    if (!user) {
+        onNavigate("login");
+        return null;
+    }
+
+    return <AdminDashboard onNavigate={onNavigate} signOut={signOut} />;
+}
+
+function AdminDashboard({ onNavigate, signOut }: { onNavigate: (page: string) => void; signOut: () => Promise<void> }) {
     const [activeTab, setActiveTab] = useState("overview");
     const [isDark, setIsDark] = useState(false);
     const { services } = useServices();
@@ -74,6 +99,10 @@ export function Admin() {
                                 Back to Site
                             </Button>
                             <Button
+                                onClick={async () => {
+                                    await signOut();
+                                    onNavigate("login");
+                                }}
                                 variant="outline"
                                 size="sm"
                                 className="border-red-300 dark:border-red-600 hover:bg-red-50 dark:hover:bg-red-600 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-white"

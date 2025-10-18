@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { AuthProvider } from "./contexts/AuthContext";
 import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/Footer";
 import { Hero } from "../components/Hero";
@@ -15,8 +16,18 @@ import { Projects } from "../pages/Projects";
 import { Testimonials } from "../pages/Testimonials";
 import { Contact } from "../pages/Contact";
 import { Admin } from "../pages/Admin";
+import { Login } from "../pages/Login";
+import { HelpCenter } from "../pages/HelpCenter";
 
 export default function App() {
+    return (
+        <AuthProvider>
+            <AppContent />
+        </AuthProvider>
+    );
+}
+
+function AppContent() {
     const [currentPage, setCurrentPage] = useState(() => {
         const path = window.location.pathname.slice(1) || "home";
         return path;
@@ -62,7 +73,11 @@ export default function App() {
             case "contact":
                 return <Contact />;
             case "admin":
-                return <Admin />;
+                return <Admin onNavigate={handleNavigate} />;
+            case "login":
+                return <Login onNavigate={handleNavigate} />;
+            case "help":
+                return <HelpCenter onNavigate={handleNavigate} />;
             default:
                 return (
                     <>
@@ -78,12 +93,14 @@ export default function App() {
         }
     };
 
+    const hideNavAndFooter = ["admin", "login", "help"].includes(currentPage);
+
     return (
         <div className="min-h-screen bg-background">
-            {currentPage !== "admin" && <Navbar currentPage={currentPage} onNavigate={handleNavigate} />}
+            {!hideNavAndFooter && <Navbar currentPage={currentPage} onNavigate={handleNavigate} />}
             <main>{renderPage()}</main>
-            {currentPage !== "admin" && <Footer onNavigate={handleNavigate} />}
-            {currentPage !== "admin" && (
+            {!hideNavAndFooter && <Footer onNavigate={handleNavigate} />}
+            {!hideNavAndFooter && (
                 <WhatsAppButton
                     phoneNumber="+252638383838"
                     message="Hello! I'm interested in learning more about Tamarsan's renewable energy solutions."
