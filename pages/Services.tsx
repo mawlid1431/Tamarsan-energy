@@ -49,12 +49,9 @@ export function Services({ onNavigate }: ServicesProps = {}) {
             <h1 className="text-4xl md:text-6xl mb-6">
               Our <span className="text-primary">Services</span>
             </h1>
-            <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-8">
-              No services available yet. Add services from the admin panel to display them here.
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+              Services Coming Soon
             </p>
-            <a href="/admin" className="text-primary hover:underline">
-              Go to Admin Panel →
-            </a>
           </div>
         </section>
       </div>

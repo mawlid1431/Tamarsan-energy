@@ -32,12 +32,9 @@ export function Testimonials() {
             <h1 className="text-4xl md:text-6xl mb-6">
               Client <span className="text-primary">Testimonials</span>
             </h1>
-            <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-8">
-              No testimonials available yet. Add testimonials from the admin panel to display them here.
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+              Testimonials Coming Soon
             </p>
-            <a href="/admin" className="text-primary hover:underline">
-              Go to Admin Panel →
-            </a>
           </div>
         </section>
       </div>
