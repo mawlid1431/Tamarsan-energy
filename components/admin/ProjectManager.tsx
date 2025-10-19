@@ -99,9 +99,10 @@ export function ProjectManager() {
 
     const handleEdit = (project: any) => {
         setEditing(project.id);
+        const year = project.date ? project.date.split('-')[0] : '';
         setFormData({
             name: project.name,
-            date: project.date,
+            date: year ? `${year}-01-01` : '',
             location: project.location,
             description: project.description,
             image_url: project.image_url || "",
@@ -150,20 +151,34 @@ export function ProjectManager() {
                             required
                         />
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <Input
-                                placeholder="Date (e.g., 2023-2024)"
-                                value={formData.date}
-                                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                                className={inputClass}
-                                required
-                            />
-                            <Input
-                                placeholder="Location"
-                                value={formData.location}
-                                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                                className={inputClass}
-                                required
-                            />
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+                                    Project Year
+                                </label>
+                                <select
+                                    value={formData.date}
+                                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                                    className={`w-full px-3 py-2 rounded-md border ${inputClass}`}
+                                    required
+                                >
+                                    <option value="">Select Year</option>
+                                    {Array.from({ length: 30 }, (_, i) => new Date().getFullYear() - i).map(year => (
+                                        <option key={year} value={`${year}-01-01`}>{year}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+                                    Location
+                                </label>
+                                <Input
+                                    placeholder="Location"
+                                    value={formData.location}
+                                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                                    className={inputClass}
+                                    required
+                                />
+                            </div>
                         </div>
                         <Textarea
                             placeholder="Description"
@@ -271,7 +286,7 @@ export function ProjectManager() {
                             <div className="flex justify-between items-start mb-3 gap-4">
                                 <div className="flex-1 min-w-0">
                                     <h4 className="font-semibold text-gray-900 dark:text-white break-words">{project.name}</h4>
-                                    <p className="text-sm text-gray-600 dark:text-slate-400 break-words">{project.location} • {project.date}</p>
+                                    <p className="text-sm text-gray-600 dark:text-slate-400 break-words">{project.location} • {project.date?.split('-')[0]}</p>
                                 </div>
                                 <div className="flex gap-2 flex-shrink-0">
                                     <Button size="sm" variant="ghost"
