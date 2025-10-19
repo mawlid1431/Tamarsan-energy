@@ -72,10 +72,17 @@ export function ProjectManager() {
             rate: formData.rate ? parseFloat(formData.rate) : null
         };
 
+        let result;
         if (editing) {
-            await updateProject(editing, projectData);
+            result = await updateProject(editing, projectData);
         } else {
-            await addProject(projectData);
+            result = await addProject(projectData);
+        }
+
+        if (result.error) {
+            alert(`Failed to save project: ${result.error}`);
+            setSubmitting(false);
+            return;
         }
 
         resetForm();

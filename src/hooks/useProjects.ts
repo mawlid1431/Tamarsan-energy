@@ -30,16 +30,21 @@ export function useProjects() {
 
     const addProject = async (project: ProjectInsert) => {
         try {
+            console.log('Inserting project:', project)
             const { data, error } = await supabase
                 .from('projects')
                 .insert(project)
                 .select()
                 .single()
 
-            if (error) throw error
+            if (error) {
+                console.error('Supabase error:', error)
+                throw error
+            }
             setProjects(prev => [data, ...prev])
             return { data, error: null }
         } catch (err) {
+            console.error('Add project error:', err)
             return { data: null, error: err instanceof Error ? err.message : 'Failed to add project' }
         }
     }
