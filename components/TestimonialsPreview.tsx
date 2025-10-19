@@ -65,7 +65,7 @@ export function TestimonialsPreview({ onNavigate }: TestimonialsPreviewProps) {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {testimonials.map((testimonial, index) => (
+          {testimonials.slice(0, 3).map((testimonial, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 40 }}
