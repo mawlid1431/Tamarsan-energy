@@ -74,7 +74,7 @@ export function Projects() {
       {/* Projects Grid */}
       <section className="py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {projects.map((project, index) => (
               <motion.div
                 key={project.title}
@@ -87,7 +87,7 @@ export function Projects() {
                 onClick={() => handleProjectClick(project)}
               >
                 {/* Project Image */}
-                <div className="relative h-64 overflow-hidden">
+                <div className="relative h-56 overflow-hidden">
                   <ImageWithFallback
                     src={project.image}
                     alt={project.title}
@@ -103,13 +103,13 @@ export function Projects() {
                 </div>
 
                 {/* Project Content */}
-                <div className="p-6">
-                  <h3 className="mb-3">{project.title}</h3>
-                  <p className="text-muted-foreground mb-4">
+                <div className="p-5">
+                  <h3 className="text-xl mb-2">{project.title}</h3>
+                  <p className="text-muted-foreground text-sm mb-4 line-clamp-3">
                     {project.description}
                   </p>
-                  <div className="flex items-center space-x-2 text-primary">
-                    <Zap className="w-5 h-5" />
+                  <div className="flex items-center space-x-2 text-primary text-sm">
+                    <Zap className="w-4 h-4" />
                     <span>{project.impact}</span>
                   </div>
                 </div>

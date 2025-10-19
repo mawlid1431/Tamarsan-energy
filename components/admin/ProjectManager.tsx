@@ -6,6 +6,18 @@ import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Plus, Pencil, Trash2, FolderKanban, Loader2, Upload, X } from "lucide-react";
 
+// Default fallback images for projects
+const DEFAULT_PROJECT_IMAGES = [
+    "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=800&q=80", // Solar panels with green tree
+    "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=800&q=80", // Solar panels field
+    "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=800&q=80", // Solar installation
+    "https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=800&q=80", // Renewable energy concept
+];
+
+const getRandomDefaultImage = () => {
+    return DEFAULT_PROJECT_IMAGES[Math.floor(Math.random() * DEFAULT_PROJECT_IMAGES.length)];
+};
+
 export function ProjectManager() {
     const { projects, loading, addProject, updateProject, deleteProject } = useProjects();
     const [editing, setEditing] = useState<string | null>(null);
@@ -63,6 +75,11 @@ export function ProjectManager() {
             imageUrl = url || "";
         }
 
+        // If no image provided, use a random default image
+        if (!imageUrl) {
+            imageUrl = getRandomDefaultImage();
+        }
+
         // Validate date is selected
         if (!formData.date) {
             alert('Please select a year for the project');
@@ -78,7 +95,7 @@ export function ProjectManager() {
             date: dateValue,
             location: formData.location,
             description: formData.description,
-            image_url: imageUrl || null,
+            image_url: imageUrl,
             rate: formData.rate ? parseFloat(formData.rate) : null
         };
 
@@ -301,28 +318,42 @@ export function ProjectManager() {
             ) : (
                 <div className="grid grid-cols-1 gap-4">
                     {projects.map((project) => (
-                        <div key={project.id} className="bg-white dark:bg-slate-900 p-6 rounded-lg border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all">
-                            <div className="flex justify-between items-start mb-3 gap-4">
-                                <div className="flex-1 min-w-0">
-                                    <h4 className="font-semibold text-gray-900 dark:text-white break-words">{project.name}</h4>
-                                    <p className="text-sm text-gray-600 dark:text-slate-400 break-words">{project.location} • {project.date?.split('-')[0]}</p>
+                        <div key={project.id} className="bg-white dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all overflow-hidden">
+                            {/* Project Image */}
+                            {project.image_url && (
+                                <div className="h-48 overflow-hidden">
+                                    <img
+                                        src={project.image_url}
+                                        alt={project.name}
+                                        className="w-full h-full object-cover"
+                                    />
                                 </div>
-                                <div className="flex gap-2 flex-shrink-0">
-                                    <Button size="sm" variant="ghost"
-                                        className="text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white"
-                                        onClick={() => handleEdit(project)}>
-                                        <Pencil className="w-4 h-4" />
-                                    </Button>
-                                    <Button size="sm" variant="ghost"
-                                        className="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
-                                        onClick={() => handleDelete(project.id)}>
-                                        <Trash2 className="w-4 h-4" />
-                                    </Button>
+                            )}
+
+                            {/* Project Content */}
+                            <div className="p-6">
+                                <div className="flex justify-between items-start mb-3 gap-4">
+                                    <div className="flex-1 min-w-0">
+                                        <h4 className="font-semibold text-gray-900 dark:text-white break-words">{project.name}</h4>
+                                        <p className="text-sm text-gray-600 dark:text-slate-400 break-words">{project.location} • {project.date?.split('-')[0]}</p>
+                                    </div>
+                                    <div className="flex gap-2 flex-shrink-0">
+                                        <Button size="sm" variant="ghost"
+                                            className="text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white"
+                                            onClick={() => handleEdit(project)}>
+                                            <Pencil className="w-4 h-4" />
+                                        </Button>
+                                        <Button size="sm" variant="ghost"
+                                            className="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
+                                            onClick={() => handleDelete(project.id)}>
+                                            <Trash2 className="w-4 h-4" />
+                                        </Button>
+                                    </div>
                                 </div>
-                            </div>
-                            <p className="text-sm text-gray-600 dark:text-slate-400 mb-2 break-words whitespace-normal">{project.description}</p>
-                            <div className="flex items-center gap-2 text-xs text-indigo-600 dark:text-indigo-400">
-                                <span className="font-semibold">Rate: {project.rate}</span>
+                                <p className="text-sm text-gray-600 dark:text-slate-400 mb-2 break-words whitespace-normal">{project.description}</p>
+                                <div className="flex items-center gap-2 text-xs text-indigo-600 dark:text-indigo-400">
+                                    <span className="font-semibold">Rate: {project.rate}</span>
+                                </div>
                             </div>
                         </div>
                     ))}
