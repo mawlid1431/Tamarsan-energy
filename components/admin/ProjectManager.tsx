@@ -63,14 +63,26 @@ export function ProjectManager() {
             imageUrl = url || "";
         }
 
+        // Validate date is selected
+        if (!formData.date) {
+            alert('Please select a year for the project');
+            setSubmitting(false);
+            return;
+        }
+
+        // Ensure date is in correct format (YYYY-MM-DD)
+        const dateValue = formData.date.includes('-') ? formData.date : `${formData.date}-01-01`;
+
         const projectData = {
             name: formData.name,
-            date: formData.date,
+            date: dateValue,
             location: formData.location,
             description: formData.description,
             image_url: imageUrl || null,
             rate: formData.rate ? parseFloat(formData.rate) : null
         };
+
+        console.log('Submitting project data:', projectData);
 
         let result;
         if (editing) {
